@@ -1,0 +1,41 @@
+name: release
+on:
+  workflow_dispatch:
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Git as GitHub Actions Bot
+        uses: Lucky3028/git-as-gha@v1.0.0
+      - name: Install standard-version
+        run: npm install -g standard-version@v9.3.2
+      - name: Generate changelog
+        run: standard-version --first-release
+      - name: Push tag
+        run: git push --follow-tags origin ${GITHUB_REF#refs/heads/}
+  goreleaser:
+    runs-on: ubuntu-latest
+    needs:
+      - changelog
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # ここでpullし直さないと、前のjobでのコミットやタグを読み込まない
+      - run: git pull origin ${GITHUB_REF#refs/heads/}
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Git as GitHub Actions Bot
+        uses: Lucky3028/git-as-gha@v1.0.0
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: release --rm-dist --release-notes CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
