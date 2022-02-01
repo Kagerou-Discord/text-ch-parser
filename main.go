@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/hcl2/hclparse"
 )
 
+// +gen slice:"GroupBy[string]"
 type Channel struct {
 	Type                  string  `hcl:",label"`
 	ResourceName          string  `hcl:",label"`
@@ -29,7 +30,7 @@ type Channel struct {
 }
 
 type Config struct {
-	Resource []Channel `hcl:"resource,block"`
+	Resource ChannelSlice `hcl:"resource,block"`
 }
 
 const usages = `
@@ -98,10 +99,22 @@ func write(config Config, fileName string) {
 	fmt.Fprintln(file, "# Channels")
 	fmt.Fprintln(file)
 
-	for _, resource := range config.Resource {
-		fmt.Fprintln(file, "##", resource.Name)
+	grouped := config.Resource.GroupByStringExt(func(c Channel) string {
+		if c.Category == nil {
+			return "カテゴリなし"
+		} else {
+			return *c.Category
+		}
+	})
+
+	for pair := grouped.Oldest(); pair != nil; pair = pair.Next() {
+		fmt.Fprintln(file, "##", pair.Key)
 		fmt.Fprintln(file)
-		fmt.Fprintln(file, *resource.Topic)
-		fmt.Fprintln(file)
+		for _, ch := range pair.Value.(ChannelSlice) {
+			fmt.Fprintln(file, "###", ch.Name)
+			fmt.Fprintln(file)
+			fmt.Fprintln(file, *ch.Topic)
+			fmt.Fprintln(file)
+		}
 	}
 }
