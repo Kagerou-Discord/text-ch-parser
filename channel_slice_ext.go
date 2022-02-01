@@ -2,7 +2,7 @@ package main
 
 import orderedmap "github.com/wk8/go-ordered-map"
 
-// GroupByString groups elements into a map keyed by string. See: http://clipperhouse.github.io/gen/#GroupBy
+// GroupByStringExt groups elements into a map keyed by string. Change return type of `gen#GroupByString` to `orderedmap.OrderedMap`
 func (rcv ChannelSlice) GroupByStringExt(fn func(Channel) string) orderedmap.OrderedMap {
 	om := orderedmap.New()
 	for _, ch := range rcv {
