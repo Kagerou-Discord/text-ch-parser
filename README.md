@@ -1,5 +1,8 @@
 # text-ch-parser
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Kagerou-Discord/text-ch-parser/Go?style=for-the-badge)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Kagerou-Discord/text-ch-parser?style=for-the-badge)
+
 This repository provides a CLI tool which parses discord channel definitions written with Terraform and writes parsed data to a file.
 
 このリポジトリは、Terraformを用いて書かれたDiscordのチャンネルの定義をパースし、結果を別ファイルに書き出すCLIツールを提供しています。（自分用といって差し支えないです。）
